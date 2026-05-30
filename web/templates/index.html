@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống phân loại mô tả sản phẩm</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1><i class="fa-solid fa-layer-group"></i>Phân loại sản phẩm ứng dụng AI</h1>
+            <p>Hệ thống tự động phân loại mô tả sản phẩm sử dụng thuật toán Naive Bayes.</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('single')"><i class="fa-solid fa-pen-nib"></i> Nhập
+                    Văn Bản</button>
+                <button class="tab-btn" onclick="switchTab('batch')"><i class="fa-solid fa-file-upload"></i> Tải File
+                    Lên</button>
+            </div>
+
+            <!-- Single Input Form -->
+            <div id="single-tab" class="tab-content active">
+                <div class="card glass">
+                    <h2>Kiểm tra đơn lẻ</h2>
+                    <form id="single-form">
+                        <div class="input-group">
+                            <label for="text-input">Mô tả sản phẩm</label>
+                            <textarea id="text-input" placeholder="Ví dụ: Điện thoại iPhone 17 Pro Max 2TB..."
+                                required></textarea>
+                        </div>
+                        <button type="submit" class="btn primary-btn" id="predict-btn">
+                            Phân Loại Ngay <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <div id="single-result" class="result-box hidden">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batch Upload Form -->
+            <div id="batch-tab" class="tab-content">
+                <div class="card glass">
+                    <h2>Phân loại Hàng loạt</h2>
+                    <p class="subtitle">Tải lên file chứa danh sách các mô tả sản phẩm.</p>
+                    <form id="batch-form">
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="file-input" accept=".csv, .txt" required class="file-input">
+                            <div class="upload-area">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <span class="file-msg">Kéo thả file vào đây hoặc click để chọn file (.CSV)</span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn primary-btn" id="batch-btn">
+                            Xử Lý File <i class="fa-solid fa-gears"></i>
+                        </button>
+                    </form>
+
+                    <div id="batch-result" class="result-box hidden">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; Description Classifier - Developed by luongtd from Vinh University.</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
