@@ -18,6 +18,7 @@
 8. [Ứng dụng Website](#8-ứng-dụng-website)
 9. [Hướng dẫn chạy](#9-hướng-dẫn-chạy)
 10. [Kết quả minh họa](#10-kết-quả-minh-họa)
+11. [Triển khai trên Render](#11-triển-khai-trên-render)
 
 ---
 
@@ -388,3 +389,338 @@ uvicorn web.main:app --host 127.0.0.1 --port 8000
 ### Độ chính xác mô hình
 
 Mô hình Naive Bayes được huấn luyện với 50 mẫu cân bằng (10 mẫu/nhãn). Với các văn bản có từ khóa rõ ràng, độ tin cậy thường đạt trên **90%**. Với các văn bản mơ hồ hoặc chứa nhiều từ không có trong tập huấn luyện, độ tin cậy có thể thấp hơn và mô hình sẽ tự động đưa ra cảnh báo trong phần nhận xét.
+
+---
+
+## 11. Triển khai trên Render
+
+### 11.1 Giới thiệu Render
+
+**Render** là nền tảng cloud hosting miễn phí cho phép triển khai các ứng dụng web Python, Node.js, Docker, v.v. với tính năng:
+
+- ✅ **Miễn phí**: Free tier đủ để chạy các ứng dụng nhỏ và trung bình
+- ✅ **Tự động deploy**: Chỉ cần push code lên GitHub, Render sẽ tự động build và deploy
+- ✅ **HTTPS tự động**: Cấp certificate SSL/TLS miễn phí
+- ✅ **Dễ cấu hình**: Hỗ trợ Python, có thể chạy các lệnh tùy chỉnh
+
+### 11.2 Yêu cầu trước deploy
+
+Để deploy dự án này lên Render, bạn cần:
+
+1. **Tài khoản Render** — Đăng ký miễn phí tại [render.com](https://render.com)
+2. **Tài khoản GitHub** — Code phải được push lên repository GitHub (Render sẽ pull từ đây)
+3. **Git cài đặt** — Để push code lên GitHub
+4. **Code đã sẵn sàng** — Đảm bảo tất cả file cần thiết đã được commit
+
+### 11.3 Các file cấu hình cần thiết
+
+Dự án đã có sẵn các file cấu hình sau:
+
+#### `Procfile` (cho Render hoặc Heroku)
+```
+web: uvicorn web.main:app --host 0.0.0.0 --port $PORT
+```
+
+**Giải thích:**
+- `web:` — Đây là process type, cho biết đây là web service
+- `uvicorn web.main:app` — Khởi động FastAPI server
+- `--host 0.0.0.0` — Lắng nghe trên tất cả địa chỉ IP (bắt buộc trên cloud)
+- `--port $PORT` — Dùng port từ biến môi trường `$PORT` do Render cấp
+
+#### `render.yaml` (cấu hình Render tùy chọn)
+```yaml
+services:
+  - type: web
+    name: description-classifier
+    runtime: python
+    pythonVersion: 3.11
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn web.main:app --host 0.0.0.0 --port $PORT
+```
+
+**Lưu ý:** Nếu dùng file này, Render sẽ ưu tiên cấu hình từ `render.yaml` thay vì UI dashboard.
+
+#### `requirements.txt`
+Chứa danh sách các thư viện Python cần cài đặt:
+```
+fastapi
+uvicorn
+python-multipart
+jinja2
+customtkinter
+```
+
+### 11.4 Các bước deploy chi tiết
+
+#### Bước 1: Chuẩn bị code trên GitHub
+
+**1.1 Khởi tạo Git (nếu chưa có)**
+
+```bash
+cd description-classifier
+git init
+```
+
+**1.2 Thêm repository GitHub remote**
+
+```bash
+git remote add origin https://github.com/YOUR_USERNAME/description-classifier.git
+```
+
+Thay `YOUR_USERNAME` bằng username GitHub của bạn.
+
+**1.3 Commit tất cả file**
+
+```bash
+git add .
+git commit -m "Initial commit: Product Description Classifier"
+```
+
+**1.4 Tạo branch chính và push**
+
+```bash
+git branch -M main
+git push -u origin main
+```
+
+Sau lệnh này, tất cả file sẽ được push lên GitHub. Kiểm tra tại `https://github.com/YOUR_USERNAME/description-classifier` để đảm bảo code đã có.
+
+#### Bước 2: Đăng nhập Render
+
+1. Truy cập [render.com](https://render.com)
+2. Click **"Sign up"** hoặc **"Sign in"**
+3. Chọn đăng nhập bằng **GitHub** (được khuyến khích)
+4. Cấp quyền để Render có thể truy cập repository của bạn
+
+#### Bước 3: Tạo Web Service mới
+
+1. Sau khi đăng nhập, truy cập **Dashboard**
+2. Click nút **"New +"** ở góc trên phải
+3. Chọn **"Web Service"**
+
+#### Bước 4: Kết nối repository
+
+1. Chọn repository `description-classifier` từ danh sách
+2. Nếu không thấy, click **"Configure account"** để cho phép Render truy cập thêm repository
+3. Click **"Connect"** để kết nối
+
+#### Bước 5: Cấu hình Web Service
+
+Điền thông tin sau:
+
+| Trường | Giá trị |
+|-------|--------|
+| **Name** | `description-classifier` (hoặc tên tùy ý, sẽ tạo subdomain) |
+| **Environment** | `Python 3` |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `uvicorn web.main:app --host 0.0.0.0 --port $PORT` |
+| **Instance Type** | `Free` (đủ cho phát triển) |
+
+**Ví dụ cấu hình:**
+
+```
+Name:              description-classifier
+Runtime:           Python 3
+Build Command:     pip install -r requirements.txt
+Start Command:     uvicorn web.main:app --host 0.0.0.0 --port $PORT
+Instance Type:     Free
+```
+
+#### Bước 6: Cấu hình Environment Variables (nếu cần)
+
+Để thêm biến môi trường (ví dụ API keys, config, v.v.):
+
+1. Cuộn xuống phần **"Environment"**
+2. Click **"Add Environment Variable"**
+3. Nhập `key` và `value`
+
+**Ví dụ** (tùy chọn, dự án này không yêu cầu):
+- `KEY`: `LOG_LEVEL`, `VALUE`: `info`
+
+Để trống nếu không cần.
+
+#### Bước 7: Deploy
+
+1. Cuộn xuống, click **"Create Web Service"**
+2. Render sẽ bắt đầu build và deploy
+3. Chờ 2-5 phút để quá trình hoàn tất
+
+**Trạng thái build:**
+- 🔵 **In Progress** — Đang build
+- ✅ **Live** — Deploy thành công!
+- ❌ **Failed** — Có lỗi, xem logs
+
+#### Bước 8: Truy cập ứng dụng
+
+Sau khi thành công, bạn sẽ nhận được URL dạng:
+
+```
+https://description-classifier.onrender.com
+```
+
+- Truy cập trang web chính: `https://description-classifier.onrender.com`
+- Xem API docs (Swagger UI): `https://description-classifier.onrender.com/docs`
+- Xem ReDoc docs: `https://description-classifier.onrender.com/redoc`
+
+### 11.5 Kiểm tra Logs (gỡ lỗi)
+
+Nếu deploy không thành công hoặc ứng dụng báo lỗi:
+
+1. Vào **Dashboard** → Chọn web service
+2. Click vào tab **"Logs"**
+3. Đọc thông báo lỗi để tìm nguyên nhân
+
+Một số lỗi thường gặp:
+
+| Lỗi | Nguyên nhân | Cách sửa |
+|-----|-----------|---------|
+| `ModuleNotFoundError` | Thiếu thư viện trong `requirements.txt` | Thêm thư viện vào `requirements.txt`, commit và push |
+| `ERROR: failed to build one or more wheels` | Thư viện không tương thích | Xem phiên bản Python (3.9+), cập nhật `requirements.txt` |
+| `Connection refused on port` | Port sai hoặc không dùng `$PORT` | Kiểm tra `Procfile` hoặc command, phải dùng `--port $PORT` |
+| `FileNotFoundError: data.json` | File data chưa được commit | Commit tất cả file, push lại |
+
+### 11.6 Cập nhật sau deploy
+
+Khi cần cập nhật code:
+
+**Cách 1: Tự động (được khuyến khích)**
+```bash
+# Sửa code locally
+# Commit và push
+git add .
+git commit -m "Update: Fix bug or add feature"
+git push origin main
+
+# Render sẽ tự động phát hiện và deploy lại trong 1-2 phút
+```
+
+**Cách 2: Thủ công**
+1. Vào Render Dashboard
+2. Chọn web service
+3. Click **"Manual Deploy"** → **"Deploy latest commit"**
+
+### 11.7 Lưu ý quan trọng
+
+#### 1. **Dữ liệu không được lưu giữa deploys**
+- File system trên Render là **ephemeral** (tạm thời)
+- Nếu có dữ liệu upload hoặc tạo, nó sẽ bị xóa khi container restart
+- **Giải pháp:** Lưu dữ liệu vào database (MongoDB, PostgreSQL, v.v.)
+
+#### 2. **Sleep sau 15 phút không sử dụng**
+- Free tier sẽ tự động sleep nếu không có request trong 15 phút
+- Khi có request mới, mất 30 giây để wake up (cold start)
+- **Giải pháp:** Upgrade lên tier trả phí nếu cần uptime 24/7
+
+#### 3. **Giới hạn tài nguyên**
+- **CPU:** Chia sẻ (shared), không độc quyền
+- **Memory:** 512 MB
+- **Bandwidth:** ~50 GB/tháng
+- Đủ cho phát triển và demo
+
+#### 4. **HTTPS bắt buộc**
+- Tất cả kết nối Render đều là HTTPS
+- API client phải sử dụng `https://`, không phải `http://`
+
+### 11.8 Nâng cấp (tùy chọn)
+
+Nếu muốn cải thiện hiệu suất:
+
+| Upgrade | Chi phí | Lợi ích |
+|---------|--------|--------|
+| **Paid Instance** | $7/tháng | CPU riêng, RAM đầy đủ, không sleep |
+| **PostgreSQL Database** | $15/tháng | Lưu dữ liệu persistent |
+| **Environment variables** | Miễn phí | Cấu hình an toàn (API keys, v.v.) |
+
+### 11.9 Kết nối Custom Domain (tùy chọn)
+
+Nếu muốn dùng domain riêng thay vì `*.onrender.com`:
+
+1. Mua domain (từ Namecheap, GoDaddy, v.v.)
+2. Vào **Web Service** → **Settings** → **Custom Domains**
+3. Thêm domain và cập nhật DNS records
+4. Chờ xác nhận (có thể mất vài phút đến vài giờ)
+
+### 11.10 Ví dụ Deploy hoàn chỉnh
+
+Tóm tắt quy trình:
+
+```bash
+# 1. Chuẩn bị code
+cd description-classifier
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/YOUR_USERNAME/description-classifier.git
+git push -u origin main
+
+# 2. Đăng nhập Render, tạo Web Service, điền thông tin:
+#    - Name: description-classifier
+#    - Build: pip install -r requirements.txt
+#    - Start: uvicorn web.main:app --host 0.0.0.0 --port $PORT
+#    - Instance: Free
+
+# 3. Chờ deploy ~2-5 phút
+
+# 4. Truy cập
+#    https://description-classifier.onrender.com
+
+# 5. Cập nhật trong tương lai
+git add .
+git commit -m "Update features"
+git push origin main
+# Render tự động deploy lại
+```
+
+### 11.11 Kiểm tra ứng dụng sau deploy
+
+**Trang chủ (giao diện web):**
+```
+https://description-classifier.onrender.com
+```
+
+**API Endpoints:**
+
+```bash
+# 1. Phân loại một văn bản
+curl -X POST "https://description-classifier.onrender.com/predict" \
+     -F "text=Điện thoại giá rẻ chụp ảnh đẹp"
+
+# 2. Xem API documentation
+# https://description-classifier.onrender.com/docs (Swagger UI)
+# https://description-classifier.onrender.com/redoc (ReDoc)
+
+# 3. Phân loại hàng loạt (tải file)
+curl -X POST "https://description-classifier.onrender.com/predict_batch" \
+     -F "file=@data/data.csv"
+```
+
+**Kết quả mong đợi:**
+```json
+{
+  "text": "Điện thoại giá rẻ chụp ảnh đẹp",
+  "result": {
+    "predicted_label": "Điện thoại",
+    "probabilities": {
+      "Điện thoại": 98.97,
+      "Máy tính": 0.42,
+      "Đồ gia dụng": 0.35,
+      "Thời trang": 0.13,
+      "Mỹ phẩm": 0.13
+    },
+    "comment": "Văn bản này có xác suất cao nhất thuộc về nhóm 'Điện thoại' với 98.97%."
+  }
+}
+```
+
+---
+
+## Liên hệ và Hỗ trợ
+
+Nếu gặp vấn đề hoặc có câu hỏi:
+
+- **Email:** [Email sinh viên nếu có]
+- **GitHub Issues:** Tạo issue trên repository
+- **Tài liệu thêm:**
+  - [Render Docs](https://render.com/docs)
+  - [FastAPI Docs](https://fastapi.tiangolo.com/)
+  - [Uvicorn Docs](https://www.uvicorn.org/)
