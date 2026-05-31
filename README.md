@@ -2,7 +2,7 @@
 
 > **Đơn vị**: Trường Kỹ thuật và Công nghệ - Trường Đại học Vinh |
 > **Học phần**: Xử lý ngôn ngữ tự nhiên |
-> **Hướng dẫn**: TS. Trần Xuân Sang |
+> **Hướng dẫn**: TS. Trần Xuân Sang
 > **Thực hiện**: Trần Đức Lương  
 > **Mô tả**: Dự án xây dựng hệ thống tự động phân loại mô tả sản phẩm thương mại điện tử sử dụng thuật toán Naive Bayes, được triển khai dưới hai hình thức: ứng dụng Desktop và giao diện Website.
 
