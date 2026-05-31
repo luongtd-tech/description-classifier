@@ -718,9 +718,11 @@ curl -X POST "https://description-classifier.onrender.com/predict_batch" \
 
 Nếu gặp vấn đề hoặc có câu hỏi:
 
-- **Email:** [Email sinh viên nếu có]
-- **GitHub Issues:** Tạo issue trên repository
+- **Email:** luongtd.tech@gmail.com
+- **GitHub:** luongtd-tech/description-classifier
 - **Tài liệu thêm:**
   - [Render Docs](https://render.com/docs)
   - [FastAPI Docs](https://fastapi.tiangolo.com/)
   - [Uvicorn Docs](https://www.uvicorn.org/)
+
+## © Description Classifier - Developed by luongtd from Vinh University.
