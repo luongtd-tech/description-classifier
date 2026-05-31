@@ -1,6 +1,6 @@
-# Hệ thống Phân loại Mô tả Sản phẩm
+# Hệ thống phân loại sản phẩm dựa trên mô tả
 
-> **Môn học:** Xử lý Ngôn ngữ Tự nhiên  
+> **Học phần:** Xử lý Ngôn ngữ Tự nhiên  
 > **Sinh viên:** luongtd — Trường Đại học Vinh  
 > **Mô tả:** Dự án xây dựng hệ thống tự động phân loại mô tả sản phẩm thương mại điện tử sử dụng thuật toán Naive Bayes, được triển khai dưới hai hình thức: ứng dụng Desktop và giao diện Website.
 
