@@ -1,7 +1,8 @@
 import csv
 import io
+from typing import List
 
-def parse_csv_file(file_content):
+def parse_csv_file(file_content: bytes) -> List[str]:
     """Đọc nội dung file CSV (bytes) và trả về danh sách văn bản"""
     try:
         text_data = file_content.decode('utf-8')

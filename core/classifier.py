@@ -1,4 +1,5 @@
 import math
+from typing import List, Dict, Any
 from core.nlp_utils import preprocess
 
 class NaiveBayesClassifier:
@@ -14,7 +15,7 @@ class NaiveBayesClassifier:
         # Tổng số văn bản đã huấn luyện
         self.total_docs = 0
 
-    def train(self, dataset):
+    def train(self, dataset: List[Dict[str, str]]) -> None:
         """Huấn luyện mô hình từ danh sách dữ liệu [{ text, label }]"""
         for item in dataset:
             text  = item['text']
@@ -35,7 +36,7 @@ class NaiveBayesClassifier:
                 self.class_total_words[label] += 1
                 self.class_word_counts[label][word] = self.class_word_counts[label].get(word, 0) + 1
 
-    def predict(self, text):
+    def predict(self, text: str) -> Dict[str, Any]:
         """Dự đoán nhãn cho một văn bản, trả về nhãn + xác suất + nhận xét"""
         words      = preprocess(text).split()
         vocab_size = len(self.vocab)

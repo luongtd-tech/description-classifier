@@ -86,7 +86,24 @@ description-classifier/
 
 Yêu cầu **Python 3.9 trở lên**.
 
+### Tạo môi trường ảo (Khuyên dùng)
+
+Để tránh xung đột thư viện, bạn nên tạo một môi trường ảo (Virtual Environment) trước khi cài đặt:
+
+```bash
+# Tạo môi trường ảo có tên 'venv'
+python -m venv venv
+
+# Kích hoạt môi trường ảo (trên Windows)
+venv\Scripts\activate
+
+# Kích hoạt môi trường ảo (trên macOS/Linux)
+source venv/bin/activate
+```
+
 ### Cài đặt thư viện
+
+Sau khi kích hoạt môi trường ảo, chạy lệnh sau:
 
 ```bash
 pip install -r requirements.txt
